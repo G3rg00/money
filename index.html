@@ -98,19 +98,16 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .bar-legend{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:10px;padding:0 2px}
 
 /* ===== Bottom sheet ===== */
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center;transition:padding-bottom .15s}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center}
 .backdrop.show{display:flex}
 .sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:92vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-handle{width:38px;height:4px;background:#3a443c;border-radius:99px;margin:0 auto 14px}
 .sheet h2{font-size:16px;margin:0 0 16px;text-align:center;font-weight:700;color:var(--text)}
 
-/* Amount input – readonly, amíg rá nem koppintanak */
 .amount-wrap{position:relative;margin-bottom:6px}
 .amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:16px 60px 16px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green)}
-.amount-input:not([readonly]):focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
-.amount-input[readonly]{cursor:pointer;border-color:#2f4a30}
-.amount-input[readonly]:focus{outline:none}
+.amount-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
 .amount-suffix{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:600;pointer-events:none}
 .amount-hint{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 16px}
 
@@ -143,7 +140,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </header>
 
 <main>
-  <!-- ===== HOME ===== -->
   <section class="page active" id="home">
     <div class="balance">
       <div class="label">Jelenlegi egyenleg</div>
@@ -157,7 +153,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
     <div id="recent"></div>
   </section>
 
-  <!-- ===== STATS ===== -->
   <section class="page" id="stats">
     <div class="month-nav">
       <button class="nav-arrow" id="prevMonth" aria-label="Előző hónap">‹</button>
@@ -173,13 +168,11 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <div><span class="muted">Kiadás</span><strong class="red" id="statsOut">−0 Ft</strong></div>
     </div>
 
-    <!-- 1. Kategóriánként (kördiagram) -->
     <div class="card">
       <div class="section-head" style="margin-top:0"><h2>Kategóriánként</h2></div>
       <div id="pieArea"></div>
     </div>
 
-    <!-- 2. Havi lebontás (oszlopdiagram) -->
     <div class="card">
       <div class="section-head" style="margin-top:0"><h2>Havi lebontás</h2><span class="muted">kiadások</span></div>
       <div class="bar-chart" id="barChart"></div>
@@ -187,7 +180,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
     </div>
   </section>
 
-  <!-- ===== BUDGET ===== -->
   <section class="page" id="budgets">
     <div class="section-head"><h2>Havi költségkeret</h2></div>
     <div class="card">
@@ -224,14 +216,13 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="amount-wrap">
-      <!-- readonly, amíg rá nem koppintanak – így iOS nem ajánl fel kontaktot -->
       <input id="amountInput" class="amount-input"
              type="text" inputmode="numeric" pattern="[0-9]*"
              autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             enterkeyhint="next" readonly>
+             enterkeyhint="next">
       <span class="amount-suffix">Ft</span>
     </div>
-    <div class="amount-hint" id="amountHint">👆 Koppints a mezőre az összeg beírásához</div>
+    <div class="amount-hint" id="amountHint">Mennyi az összeg?</div>
     <div class="type-toggle" id="typeToggle">
       <button data-type="expense" class="active">− Kiadás</button>
       <button data-type="income">＋ Bevétel</button>
@@ -265,7 +256,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </div>
 
 <script>
-const APP_VERSION='v8';
+const APP_VERSION='v9';
 console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
 
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
@@ -286,7 +277,6 @@ function catIcon(c){return ({'Kaja/Pia':'🍔','Szórakozás':'🎮','Játék':'
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function txHTML(t){return `<div class="card"><div class="tx"><div class="emoji">${catIcon(t.category)}</div><div class="txinfo"><strong>${escapeHTML(t.note||t.category)}</strong><small>${escapeHTML(t.category)} · ${t.date}</small></div><div class="txamt ${t.type==='income'?'green':'red'}">${t.type==='income'?'+':'−'}${fmt(t.amount)}<small><button class="smallbtn" onclick="removeTx('${t.id}')">Törlés</button></small></div></div></div>`}
 
-/* ===== FŐ render ===== */
 function render(){
   const month=transactions.filter(isThisMonth);
   const inc=sum('income'),out=sum('expense');
@@ -304,7 +294,6 @@ function render(){
   renderStats();
 }
 
-/* ===== Kördiagram SVG (Ft a közepén) ===== */
 function pieSVG(pairs,total){
   const R=70, C=2*Math.PI*R;
   if(!pairs.length || total<=0){
@@ -333,7 +322,6 @@ function pieSVG(pairs,total){
   </svg>`;
 }
 
-/* ===== STATISZTIKA ===== */
 function getStatsMonth(){
   const d=new Date();
   d.setDate(1);
@@ -358,7 +346,6 @@ function renderStats(){
   $('statsIn').textContent='+'+fmt(mi);
   $('statsOut').textContent='−'+fmt(mo);
 
-  // --- 1. Kategóriánként (kördiagram + legenda) ---
   let cats={};
   monthTx.filter(t=>t.type==='expense').forEach(t=>cats[t.category]=(cats[t.category]||0)+t.amount);
   const pairs=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
@@ -376,7 +363,6 @@ function renderStats(){
   }).join('');
   $('pieArea').innerHTML=`<div class="donut-wrap">${pie}</div><div class="donut-legend">${legend||'<div class="empty">Ebben a hónapban még nincs kiadás.</div>'}</div>`;
 
-  // --- 2. Havi lebontás (6 hónap, oszlopdiagram) ---
   const months=[];
   for(let i=5;i>=0;i--){
     const md=new Date();
@@ -405,7 +391,6 @@ function renderStats(){
 $('prevMonth').addEventListener('click',()=>{statsOffset--;renderStats()});
 $('nextMonth').addEventListener('click',()=>{if(statsOffset<0){statsOffset++;renderStats()}});
 
-/* ===== Egyéb ===== */
 function removeTx(id){if(confirm('Törlöd ezt a tranzakciót?')){transactions=transactions.filter(t=>t.id!==id);save()}}
 
 function showPage(p){
@@ -415,46 +400,28 @@ function showPage(p){
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
-/* ===== Bottom sheet ===== */
 function openAmount(type){
   selectedType=type||'expense';
   selectedCat=null;
   document.querySelectorAll('#typeToggle button').forEach(b=>b.classList.toggle('active',b.dataset.type===selectedType));
-  const inp=$('amountInput');
-  inp.value='';
-  inp.setAttribute('readonly','');   // újra readonly, amíg rá nem koppintanak
-  $('amountHint').textContent='👆 Koppints a mezőre az összeg beírásához';
+  $('amountInput').value='';
+  $('amountHint').textContent='Mennyi az összeg?';
   $('sheetCategory').classList.remove('show');
   $('sheetAmount').classList.add('show');
-  if(window.__adjustKeyboard)setTimeout(window.__adjustKeyboard,150);
 }
 function closeAll(){
   $('sheetAmount').classList.remove('show');
   $('sheetCategory').classList.remove('show');
-  document.querySelectorAll('.backdrop').forEach(b=>b.style.paddingBottom='');
   try{$('amountInput').blur()}catch(e){}
 }
 
-$('fabBtn').addEventListener('click',()=>openAmount('expense'));
+/* FAB – itt próbálunk fókuszálni, mert ez user gesture */
+$('fabBtn').addEventListener('click',()=>{
+  openAmount('expense');
+  try{$('amountInput').focus({preventScroll:true})}catch(e){}
+});
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
-
-/* Amikor a felhasználó a mezőre koppint: levesszük a readonly-t, fókusz, kurzor a végére */
-$('amountInput').addEventListener('click',function(){
-  if(this.hasAttribute('readonly')){
-    this.removeAttribute('readonly');
-    this.focus();
-    try{this.setSelectionRange(this.value.length,this.value.length)}catch(e){}
-    $('amountHint').textContent='Írd be az összeget, majd Tovább';
-  }
-});
-/* Touch fallback, néhány iOS verzióhoz */
-$('amountInput').addEventListener('touchstart',function(){
-  if(this.hasAttribute('readonly')){
-    this.removeAttribute('readonly');
-    // A fókuszt a click kezeli, itt csak a readonly-t vesszük le
-  }
-},{passive:true});
 
 document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('click',()=>{
   selectedType=b.dataset.type;
@@ -485,9 +452,6 @@ $('toCategory').addEventListener('click',()=>{
 $('backToAmount').addEventListener('click',()=>{
   $('sheetCategory').classList.remove('show');
   $('sheetAmount').classList.add('show');
-  // A mezőt újra readonly-vá tesszük, hogy ne maradjon aktív
-  const inp=$('amountInput');
-  if(!inp.hasAttribute('readonly'))inp.setAttribute('readonly','');
 });
 
 document.querySelectorAll('.cat-btn').forEach(b=>b.addEventListener('click',()=>{
@@ -508,7 +472,6 @@ $('saveTx').addEventListener('click',()=>{
 });
 $('amountInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('toCategory').click()}});
 
-/* Szűrő */
 $('filterBtn').addEventListener('click',()=>{
   filter=filter==='all'?'expense':filter==='expense'?'income':'all';
   $('filterBtn').textContent=filter==='all'?'Összes':filter==='expense'?'Csak kiadás':'Csak bevétel';
@@ -516,14 +479,12 @@ $('filterBtn').addEventListener('click',()=>{
   render();
 });
 
-/* Keret */
 $('saveBudget').addEventListener('click',()=>{
   budget=Math.max(0,Number($('budgetInput').value.replace(/[^0-9]/g,''))||0);
   localStorage.setItem(BKEY,String(budget));
   render();alert('A havi keret elmentve.');
 });
 
-/* Export / mentés */
 function download(name,content,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 $('exportBtn').addEventListener('click',()=>{
   const rows=[['Típus','Összeg (Ft)','Kategória','Dátum','Megjegyzés'],...transactions.map(t=>[t.type==='income'?'Bevétel':'Kiadás',t.amount,t.category,t.date,t.note])];
@@ -549,27 +510,10 @@ $('deleteAll').addEventListener('click',()=>{
   }
 });
 
-/* Billentyűzet-kitolás */
-(function(){
-  const vv=window.visualViewport;
-  if(!vv)return;
-  const adjust=()=>{
-    const kb=Math.max(0,window.innerHeight - vv.height - vv.offsetTop);
-    document.querySelectorAll('.backdrop').forEach(b=>{
-      if(b.classList.contains('show'))b.style.paddingBottom=kb+'px';
-    });
-  };
-  vv.addEventListener('resize',adjust);
-  vv.addEventListener('scroll',adjust);
-  window.__adjustKeyboard=adjust;
-})();
-
-/* Init */
 $('today').textContent=new Date().toLocaleDateString('hu-HU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 
-/* ===== GYORS RÖGZÍTÉS ===== */
 (function detectQuick(){
   const h=(location.href||'').toLowerCase();
   const s=(location.search||'').toLowerCase();
