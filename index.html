@@ -96,7 +96,8 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 /* ===== Bottom sheet ===== */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:20;display:none;align-items:flex-end;justify-content:center}
 .backdrop.show{display:flex}
-.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:95vh;overflow-y:auto}
+.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));border:1px solid var(--line);border-bottom:0;max-height:95vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.backdrop.show .sheet{animation:slideUp .28s cubic-bezier(.2,.8,.3,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-handle{width:38px;height:4px;background:#3a443c;border-radius:99px;margin:0 auto 14px}
 .sheet h2{font-size:16px;margin:0 0 16px;text-align:center;font-weight:700;color:var(--text)}
@@ -128,24 +129,34 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .summary-line .lbl{color:var(--muted);font-size:13px}
 .summary-line .val{font-weight:700;font-variant-numeric:tabular-nums}
 
-/* ===== Megjegyzés mező – kifejezetten a szövegbevitelhez ===== */
-.note-wrap{margin:6px 0 16px}
+/* ===== Megjegyzés mező – textarea, minden iOS trükk ===== */
+.note-wrap{margin:0 0 14px}
 #noteInput{
   width:100%;
   background:#101512;
   border:1px solid var(--line);
   border-radius:12px;
   color:var(--text);
-  padding:14px 13px;
+  padding:13px 14px;
   font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   margin:0;
+  min-height:48px;
+  max-height:120px;
+  resize:none;
+  line-height:1.35;
   -webkit-user-select:text;
+  -moz-user-select:text;
   user-select:text;
   -webkit-appearance:none;
   appearance:none;
+  -webkit-touch-callout:default;
+  pointer-events:auto;
 }
 #noteInput:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
 #noteInput::placeholder{color:#5a675d}
+
+/* Billentyűzet-kitolás */
+.backdrop.kb-up .sheet{padding-bottom:calc(env(safe-area-inset-bottom) + 8px)}
 
 @media(min-width:600px){.amount{font-size:43px}main{padding:0 22px}}
 </style>
@@ -270,6 +281,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <span class="val" id="summaryAmount">0 Ft</span>
     </div>
     <div class="cat-grid" id="catGrid">
+      <button class="cat-btn" data-cat="Reggeli"><span class="ico">🏫</span>Reggeli</button>
       <button class="cat-btn" data-cat="Kaja/Pia"><span class="ico">🍔</span>Kaja/Pia</button>
       <button class="cat-btn" data-cat="Szórakozás"><span class="ico">🎮</span>Szórakozás</button>
       <button class="cat-btn" data-cat="Játék"><span class="ico">🕹️</span>Játék</button>
@@ -279,9 +291,10 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 
     <label class="small" for="noteInput">Megjegyzés (nem kötelező)</label>
     <div class="note-wrap">
-      <input id="noteInput" type="text" maxlength="90" autocomplete="off"
-             autocorrect="on" autocapitalize="sentences" spellcheck="true"
-             enterkeyhint="done" placeholder="Pl. ebéd a barátokkal">
+      <textarea id="noteInput" maxlength="90" rows="1"
+                autocomplete="off" autocorrect="on" autocapitalize="sentences"
+                spellcheck="true" enterkeyhint="done"
+                placeholder="Pl. ebéd a barátokkal"></textarea>
     </div>
 
     <button class="btn" id="saveTx" disabled>Mentés</button>
@@ -290,7 +303,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </div>
 
 <script>
-const APP_VERSION='v11';
+const APP_VERSION='v12';
 console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
 
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
@@ -312,7 +325,7 @@ function dateLocal(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth(
 function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
 function isThisMonth(t){return t.date.slice(0,7)===monthKey(new Date())}
 function sum(type,arr=transactions){return arr.filter(t=>t.type===type).reduce((s,t)=>s+t.amount,0)}
-function catIcon(c){return ({'Kaja/Pia':'🍔','Szórakozás':'🎮','Játék':'🕹️','Ruha':'👕','Adomány':'🎁'})[c]||'💸'}
+function catIcon(c){return ({'Reggeli':'☕','Kaja/Pia':'🍔','Szórakozás':'🎮','Játék':'🕹️','Ruha':'👕','Adomány':'🎁'})[c]||'💸'}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function txHTML(t){return `<div class="card"><div class="tx"><div class="emoji">${catIcon(t.category)}</div><div class="txinfo"><strong>${escapeHTML(t.note||t.category)}</strong><small>${escapeHTML(t.category)} · ${t.date}</small></div><div class="txamt ${t.type==='income'?'green':'red'}">${t.type==='income'?'+':'−'}${fmt(t.amount)}<small><button class="smallbtn" onclick="removeTx('${t.id}')">Törlés</button></small></div></div></div>`}
 
@@ -460,11 +473,14 @@ function openAmount(type){
 function closeAll(){
   $('sheetAmount').classList.remove('show');
   $('sheetCategory').classList.remove('show');
+  document.querySelectorAll('.backdrop').forEach(b=>b.classList.remove('kb-up'));
   try{$('noteInput').blur()}catch(e){}
 }
 
 $('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
+
+/* Backdrop kattintás: csak akkor zár, ha a backdrop-ot érinti */
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
 
 document.querySelectorAll('.numpad button').forEach(b=>{
@@ -528,6 +544,30 @@ $('saveTx').addEventListener('click',()=>{
   });
   save();closeAll();
 });
+
+/* Megjegyzés: biztosítjuk, hogy a fókusz működjön és látható maradjon */
+$('noteInput').addEventListener('focus',()=>{
+  setTimeout(()=>{
+    try{$('noteInput').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
+  },300);
+});
+
+/* Billentyűzet-figyelés – a sheetet feljebb tolja, hogy a mező ne legyen takarásban */
+(function(){
+  const vv=window.visualViewport;
+  if(!vv)return;
+  const adjust=()=>{
+    const kb=Math.max(0,window.innerHeight - vv.height - vv.offsetTop);
+    document.querySelectorAll('.backdrop').forEach(b=>{
+      if(!b.classList.contains('show'))return;
+      if(kb>80)b.classList.add('kb-up');
+      else b.classList.remove('kb-up');
+    });
+  };
+  vv.addEventListener('resize',adjust);
+  vv.addEventListener('scroll',adjust);
+  adjust();
+})();
 
 $('filterBtn').addEventListener('click',()=>{
   filter=filter==='all'?'expense':filter==='expense'?'income':'all';
