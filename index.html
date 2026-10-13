@@ -102,7 +102,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .sheet-handle{width:38px;height:4px;background:#3a443c;border-radius:99px;margin:0 auto 14px}
 .sheet h2{font-size:16px;margin:0 0 16px;text-align:center;font-weight:700;color:var(--text)}
 
-/* ===== Saját számbillentyűzet ===== */
 .amount-display{text-align:center;font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1.5px;margin:4px 0 2px;min-height:54px;color:var(--text);overflow-wrap:anywhere;line-height:1.2}
 .amount-display small{color:var(--muted);font-size:20px;font-weight:600;margin-left:4px;letter-spacing:0}
 .amount-display.pulse{animation:pulse 1.4s ease-in-out infinite}
@@ -129,7 +128,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .summary-line .lbl{color:var(--muted);font-size:13px}
 .summary-line .val{font-weight:700;font-variant-numeric:tabular-nums}
 
-/* ===== Megjegyzés mező – textarea, minden iOS trükk ===== */
 .note-wrap{margin:0 0 14px}
 #noteInput{
   width:100%;
@@ -155,7 +153,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 #noteInput:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
 #noteInput::placeholder{color:#5a675d}
 
-/* Billentyűzet-kitolás */
 .backdrop.kb-up .sheet{padding-bottom:calc(env(safe-area-inset-bottom) + 8px)}
 
 @media(min-width:600px){.amount{font-size:43px}main{padding:0 22px}}
@@ -229,6 +226,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <button class="btn secondary" id="backupBtn">Biztonsági mentés letöltése</button>
       <button class="btn secondary" style="margin-top:8px" id="restoreBtn">Mentés visszaállítása</button>
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+      <button class="btn secondary" style="margin-top:8px" onclick="forceRefresh()">🔄 Alkalmazás frissítése</button>
       <button class="btn danger" style="margin-top:8px" id="deleteAll">Minden adat törlése</button>
     </div>
   </section>
@@ -242,7 +240,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
   <button data-page="budgets"><span>◎</span>Keret</button>
 </nav>
 
-<!-- ===== 1. ablak: ÖSSZEG (saját számbillentyűzettel) ===== -->
+<!-- ===== 1. ablak: ÖSSZEG ===== -->
 <div class="backdrop" id="sheetAmount">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -281,7 +279,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <span class="val" id="summaryAmount">0 Ft</span>
     </div>
     <div class="cat-grid" id="catGrid">
-      <button class="cat-btn" data-cat="Reggeli"><span class="ico">🏫</span>Reggeli</button>
+      <button class="cat-btn" data-cat="Reggeli"><span class="ico">☕</span>Reggeli</button>
       <button class="cat-btn" data-cat="Kaja/Pia"><span class="ico">🍔</span>Kaja/Pia</button>
       <button class="cat-btn" data-cat="Szórakozás"><span class="ico">🎮</span>Szórakozás</button>
       <button class="cat-btn" data-cat="Játék"><span class="ico">🕹️</span>Játék</button>
@@ -479,8 +477,6 @@ function closeAll(){
 
 $('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
-
-/* Backdrop kattintás: csak akkor zár, ha a backdrop-ot érinti */
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
 
 document.querySelectorAll('.numpad button').forEach(b=>{
@@ -545,14 +541,12 @@ $('saveTx').addEventListener('click',()=>{
   save();closeAll();
 });
 
-/* Megjegyzés: biztosítjuk, hogy a fókusz működjön és látható maradjon */
 $('noteInput').addEventListener('focus',()=>{
   setTimeout(()=>{
     try{$('noteInput').scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
   },300);
 });
 
-/* Billentyűzet-figyelés – a sheetet feljebb tolja, hogy a mező ne legyen takarásban */
 (function(){
   const vv=window.visualViewport;
   if(!vv)return;
@@ -608,9 +602,9 @@ $('deleteAll').addEventListener('click',()=>{
 });
 
 $('today').textContent=new Date().toLocaleDateString('hu-HU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 
+/* ===== GYORS RÖGZÍTÉS ===== */
 (function detectQuick(){
   const h=(location.href||'').toLowerCase();
   const s=(location.search||'').toLowerCase();
@@ -628,6 +622,61 @@ render();
   setTimeout(go,400);
   setTimeout(go,900);
 })();
+</script>
+
+<!-- ===== SERVICE WORKER + AUTO-FRISSÍTÉS ===== -->
+<script>
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      const nw = reg.installing;
+      if(!nw) return;
+      nw.addEventListener('statechange', () => {
+        if(nw.state === 'installed' && navigator.serviceWorker.controller){
+          nw.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    });
+    setInterval(() => { reg.update().catch(()=>{}); }, 60000);
+    reg.update().catch(()=>{});
+  }).catch(()=>{});
+
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
+  navigator.serviceWorker.addEventListener('message', e => {
+    if(e.data && e.data.type === 'CACHE_CLEARED'){
+      window.location.reload();
+    }
+  });
+})();
+
+window.forceRefresh = function(){
+  if(!('serviceWorker' in navigator)){
+    location.reload();
+    return;
+  }
+  navigator.serviceWorker.ready.then(reg => {
+    if(reg.active){
+      reg.active.postMessage({ type: 'CLEAR_CACHE' });
+      setTimeout(() => {
+        if(window.caches){
+          caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+            .then(() => location.reload())
+            .catch(() => location.reload());
+        } else location.reload();
+      }, 1200);
+    } else {
+      location.reload();
+    }
+  }).catch(() => location.reload());
+};
 </script>
 </body>
 </html>
