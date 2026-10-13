@@ -67,22 +67,18 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 #monthTitle{font-weight:700;font-size:16px;text-transform:capitalize}
 #monthLabel{color:var(--muted);font-size:12px;margin-top:3px}
 
-/* ===== Stats hero ===== */
-.hero-net{text-align:center;padding:6px 0 16px;border-bottom:1px solid var(--line);margin-bottom:16px}
-.hero-net .label{font-size:12px}
-.hero-net .amount{font-size:34px;margin:8px 0 0;font-weight:800;letter-spacing:-1px}
-.hero-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:center}
-.hero-row .label{font-size:12px}
-.hero-row strong{display:block;margin-top:6px;font-size:17px;font-variant-numeric:tabular-nums}
-.delta{margin-top:16px;text-align:center;font-size:13px;color:var(--muted)}
-.delta .up{color:var(--red);font-weight:700}
-.delta .down{color:var(--green);font-weight:700}
-.daily-avg{margin-top:12px;padding:10px 14px;background:#101512;border:1px solid var(--line);border-radius:12px;font-size:13px;text-align:center;color:var(--muted);display:none}
-.daily-avg.show{display:block}
-.daily-avg strong{color:var(--text);font-variant-numeric:tabular-nums}
+/* ===== Balance rows ===== */
+.bal-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;font-size:14px}
+.bal-row + .bal-row{border-top:1px solid #202721}
+.bal-row .lbl{color:var(--muted)}
+.bal-row .val{font-weight:700;font-variant-numeric:tabular-nums}
+.bal-divider{border-top:1px solid var(--line);margin:6px 0}
+.bal-row.total{padding-top:14px;padding-bottom:4px}
+.bal-row.total .lbl{color:var(--text);font-weight:600}
+.bal-row.total .val{font-size:18px}
 
 /* ===== Mini chart ===== */
-.mini-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:0 2px 0}
+.mini-chart{display:flex;align-items:flex-end;gap:6px;height:110px;padding:0 2px 0}
 .mini-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:none;border:0;padding:0;font-family:inherit}
 .mini-bar-inner{width:100%;background:#1a201c;border-radius:6px 6px 0 0;height:100%;display:flex;align-items:flex-end;overflow:hidden;transition:background .2s}
 .mini-bar-inner > i{display:block;width:100%;background:var(--green);border-radius:6px 6px 0 0;transition:height .3s;min-height:3px}
@@ -101,7 +97,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .sheet h2{font-size:16px;margin:0 0 16px;text-align:center;font-weight:700;color:var(--text)}
 
 .amount-wrap{position:relative;margin-bottom:6px}
-.amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:16px 60px 16px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green)}
+.amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:16px 60px 16px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green);-webkit-user-select:text;user-select:text}
 .amount-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
 .amount-suffix{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:600;pointer-events:none}
 .amount-hint{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 16px}
@@ -160,28 +156,26 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <button class="nav-arrow" id="nextMonth" aria-label="Következő hónap">›</button>
     </div>
 
-    <div class="card">
-      <div class="hero-net">
-        <div class="label">Megtakarítás ebben a hónapban</div>
-        <div class="amount" id="statsNet">0 Ft</div>
-      </div>
-      <div class="hero-row">
-        <div><span class="label">Bevétel</span><strong class="green" id="statsIn">0 Ft</strong></div>
-        <div><span class="label">Kiadás</span><strong class="red" id="statsOut">0 Ft</strong></div>
-      </div>
-      <div class="delta" id="statsDelta"></div>
-      <div class="daily-avg" id="dailyAvg"></div>
-    </div>
-
-    <div class="card">
-      <div class="section-head" style="margin-top:0"><h2>Utolsó 6 hónap</h2><span class="muted" id="miniChartCaption">kiadások</span></div>
-      <div class="mini-chart" id="miniChart"></div>
-      <div class="mini-chart-legend"><span>régebbi</span><span>most</span></div>
-    </div>
-
+    <!-- Kategóriánként (legfelül) -->
     <div class="card">
       <div class="section-head" style="margin-top:0"><h2>Kategóriánként</h2></div>
       <div id="categoryStats"></div>
+    </div>
+
+    <!-- Egyenleg -->
+    <div class="card">
+      <div class="bal-row"><span class="lbl">Kezdő egyenleg</span><span class="val" id="startBal">0 Ft</span></div>
+      <div class="bal-row"><span class="lbl">Bevétel</span><span class="val green" id="statsIn">+0 Ft</span></div>
+      <div class="bal-row"><span class="lbl">Kiadás</span><span class="val red" id="statsOut">−0 Ft</span></div>
+      <div class="bal-divider"></div>
+      <div class="bal-row total"><span class="lbl">Záró egyenleg</span><span class="val" id="endBal">0 Ft</span></div>
+    </div>
+
+    <!-- Hónapok -->
+    <div class="card">
+      <div class="section-head" style="margin-top:0"><h2>Utolsó 6 hónap</h2><span class="muted">kiadások</span></div>
+      <div class="mini-chart" id="miniChart"></div>
+      <div class="mini-chart-legend"><span>régebbi</span><span>most</span></div>
     </div>
   </section>
 
@@ -190,7 +184,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
     <div class="section-head"><h2>Havi költségkeret</h2></div>
     <div class="card">
       <label class="small" for="budgetInput">Teljes havi kiadási keret (Ft)</label>
-      <input id="budgetInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" name="pz-budget-x9k2">
+      <input id="budgetInput" type="text" inputmode="numeric" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" name="pz-bgt">
       <button class="btn" id="saveBudget">Keret mentése</button>
       <div class="section-head"><h2>Felhasználás</h2><strong id="budgetUsed" style="font-variant-numeric:tabular-nums">0 Ft</strong></div>
       <div class="progress"><div id="budgetProgress" style="width:0%"></div></div>
@@ -222,10 +216,11 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
   <div class="sheet" id="sheetAmountBody">
     <div class="sheet-handle"></div>
     <div class="amount-wrap">
+      <!-- type="text" + inputmode numeric + autocomplete=new-password: iOS nem ajánlja fel a kontaktokat -->
       <input id="amountInput" class="amount-input"
-             type="text" inputmode="numeric" pattern="[0-9]*"
-             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             enterkeyhint="next" name="pz-amt-x9k2">
+             type="text" inputmode="numeric"
+             autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"
+             enterkeyhint="next" name="pz-x9k2">
       <span class="amount-suffix">Ft</span>
     </div>
     <div class="amount-hint" id="amountHint">Mennyi az összeg?</div>
@@ -262,13 +257,13 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </div>
 
 <script>
-const APP_VERSION='v5';
+const APP_VERSION='v6';
 console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
 
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
 let transactions=load(KEY,[]), budget=Number(localStorage.getItem(BKEY)||0), filter='all';
 let selectedType='expense', selectedCat=null;
-let statsOffset=0; // 0 = ez a hónap, -1 = előző hónap, stb.
+let statsOffset=0;
 const $=id=>document.getElementById(id);
 function load(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}
 function save(){localStorage.setItem(KEY,JSON.stringify(transactions));render()}
@@ -291,13 +286,19 @@ function render(){
   const sorted=[...transactions].sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
   const shown=filter==='all'?sorted:sorted.filter(t=>t.type===filter);
   $('recent').innerHTML=shown.slice(0,30).map(txHTML).join('')||'<div class="card empty">Még nincs tranzakciód.<br>Nyomd meg a ＋ gombot!</div>';
-  // Keret
   const used=sum('expense',month),pct=budget?Math.min(100,used/budget*100):0;
   $('budgetInput').value=budget||'';
   $('budgetUsed').textContent=fmt(used)+' / '+fmt(budget);
   $('budgetProgress').style.width=pct+'%';
   $('budgetCaption').textContent=budget?`A keret ${Math.round(used/budget*100)}%-át használtad fel.`:'Állíts be havi keretet.';
   renderStats();
+}
+
+/* ===== Egyenleg adott hónap ELŐTT (átvitt maradék) ===== */
+function balanceBefore(monthKeyStr){
+  return transactions
+    .filter(t=>t.date.slice(0,7) < monthKeyStr)
+    .reduce((s,t)=>s+(t.type==='income'?t.amount:-t.amount),0);
 }
 
 /* ===== STATISZTIKA ===== */
@@ -314,9 +315,9 @@ function renderStats(){
   const monthTx=transactions.filter(t=>t.date.slice(0,7)===key);
   const mi=sum('income',monthTx);
   const mo=sum('expense',monthTx);
-  const net=mi-mo;
+  const startBal=balanceBefore(key);
+  const endBal=startBal+mi-mo;
 
-  // Hónap cím
   $('monthTitle').textContent=d.toLocaleDateString('hu-HU',{month:'long',year:'numeric'});
   const label = statsOffset===0 ? 'Ez a hónap'
               : statsOffset===-1 ? 'Előző hónap'
@@ -324,38 +325,24 @@ function renderStats(){
   $('monthLabel').textContent=label;
   $('nextMonth').disabled = statsOffset>=0;
 
-  // Fő számok
-  $('statsNet').textContent=(net>=0?'+':'−')+fmt(Math.abs(net));
-  $('statsNet').className='amount '+(net>=0?'green':'red');
-  $('statsIn').textContent=fmt(mi);
-  $('statsOut').textContent=fmt(mo);
+  // Egyenleg blokk
+  $('startBal').textContent=fmt(startBal);
+  $('startBal').className='val '+(startBal>=0?'green':'red');
+  $('statsIn').textContent='+'+fmt(mi);
+  $('statsOut').textContent='−'+fmt(mo);
+  $('endBal').textContent=fmt(endBal);
+  $('endBal').className='val '+(endBal>=0?'green':'red');
 
-  // Delta az előző hónaphoz képest (kiadás)
-  const prevD=new Date(d); prevD.setMonth(prevD.getMonth()-1);
-  const prevExp=sum('expense',transactions.filter(t=>t.date.slice(0,7)===monthKey(prevD)));
-  if(prevExp>0 && mo>0){
-    const diff=((mo-prevExp)/prevExp)*100;
-    const cls=diff>0?'up':'down';
-    const sign=diff>0?'+':'';
-    $('statsDelta').innerHTML=`Kiadás: <span class="${cls}">${sign}${Math.round(diff)}%</span> az előző hónaphoz képest`;
-  } else if(mo>0){
-    $('statsDelta').textContent='Nincs előző havi adat az összehasonlításhoz.';
-  } else {
-    $('statsDelta').textContent='';
-  }
+  // Kategóriák
+  let cats={};
+  monthTx.filter(t=>t.type==='expense').forEach(t=>cats[t.category]=(cats[t.category]||0)+t.amount);
+  const pairs=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  $('categoryStats').innerHTML=pairs.map(([c,v])=>{
+    const pct=mo?Math.max(2,v/mo*100):0;
+    return `<div class="barrow"><div class="barlabel"><span>${catIcon(c)} ${escapeHTML(c)}</span><strong>${fmt(v)} · ${Math.round(pct)}%</strong></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  }).join('')||'<div class="empty">Ebben a hónapban még nincs kiadás.</div>';
 
-  // Napi átlag
-  if(mo>0){
-    const daysInMonth=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
-    const daysElapsed = statsOffset===0 ? new Date().getDate() : daysInMonth;
-    const avg=mo/daysElapsed;
-    $('dailyAvg').innerHTML=`Napi átlag: <strong>${fmt(avg)}</strong> · ${daysElapsed} nap alapján`;
-    $('dailyAvg').classList.add('show');
-  } else {
-    $('dailyAvg').classList.remove('show');
-  }
-
-  // 6 hónapos mini chart
+  // Mini chart – utolsó 6 hónap
   const months=[];
   for(let i=5;i>=0;i--){
     const md=new Date();
@@ -377,15 +364,6 @@ function renderStats(){
   document.querySelectorAll('.mini-bar').forEach(el=>{
     el.addEventListener('click',()=>{statsOffset=Number(el.dataset.offset);renderStats()});
   });
-
-  // Kategóriák
-  let cats={};
-  monthTx.filter(t=>t.type==='expense').forEach(t=>cats[t.category]=(cats[t.category]||0)+t.amount);
-  const pairs=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
-  $('categoryStats').innerHTML=pairs.map(([c,v])=>{
-    const pct=mo?Math.max(2,v/mo*100):0;
-    return `<div class="barrow"><div class="barlabel"><span>${catIcon(c)} ${escapeHTML(c)}</span><strong>${fmt(v)} · ${Math.round(pct)}%</strong></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
-  }).join('')||'<div class="empty">Ebben a hónapban még nincs kiadás.</div>';
 }
 
 $('prevMonth').addEventListener('click',()=>{statsOffset--;renderStats()});
@@ -411,10 +389,10 @@ function openAmount(type){
   $('sheetCategory').classList.remove('show');
   $('sheetAmount').classList.add('show');
   const tryFocus=()=>{try{$('amountInput').focus({preventScroll:true})}catch(e){}};
-  setTimeout(tryFocus,60);
-  setTimeout(tryFocus,300);
-  setTimeout(tryFocus,600);
-  if(window.__adjustKeyboard)setTimeout(window.__adjustKeyboard,120);
+  setTimeout(tryFocus,80);
+  setTimeout(tryFocus,350);
+  setTimeout(tryFocus,700);
+  if(window.__adjustKeyboard)setTimeout(window.__adjustKeyboard,150);
 }
 function closeAll(){
   $('sheetAmount').classList.remove('show');
@@ -427,15 +405,8 @@ $('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
 
-$('sheetAmountBody').addEventListener('click',e=>{
-  if(e.target.closest('button'))return;
-  $('amountInput').focus({preventScroll:true});
-});
-$('amountInput').addEventListener('focus',()=>{$('amountHint').textContent='Írd be az összeget, majd Tovább';});
-$('amountInput').addEventListener('input',()=>{
-  const v=$('amountInput').value.replace(/[^0-9]/g,'');
-  if(v!==$('amountInput').value)$('amountInput').value=v;
-});
+/* NE legyen automatikus újrafókusz – hagyjuk a natív iOS viselkedést */
+/* A mezőre koppintva az iOS magától fókuszál, gépelhető */
 
 document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('click',()=>{
   selectedType=b.dataset.type;
@@ -443,7 +414,9 @@ document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('c
 }));
 
 $('toCategory').addEventListener('click',()=>{
-  const amt=Number($('amountInput').value);
+  const raw=$('amountInput').value.replace(/[^0-9]/g,'');
+  $('amountInput').value=raw;
+  const amt=Number(raw);
   if(!Number.isFinite(amt)||amt<=0){
     $('amountHint').textContent='⚠️ Előbb írj be egy összeget';
     $('amountInput').focus();
@@ -471,7 +444,7 @@ document.querySelectorAll('.cat-btn').forEach(b=>b.addEventListener('click',()=>
 }));
 
 $('saveTx').addEventListener('click',()=>{
-  const amt=Number($('amountInput').value);
+  const amt=Number($('amountInput').value.replace(/[^0-9]/g,''));
   if(!Number.isFinite(amt)||amt<=0||!selectedCat)return;
   transactions.push({
     id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
@@ -492,13 +465,9 @@ $('filterBtn').addEventListener('click',()=>{
 
 /* Keret */
 $('saveBudget').addEventListener('click',()=>{
-  budget=Math.max(0,Number($('budgetInput').value)||0);
+  budget=Math.max(0,Number($('budgetInput').value.replace(/[^0-9]/g,''))||0);
   localStorage.setItem(BKEY,String(budget));
   render();alert('A havi keret elmentve.');
-});
-$('budgetInput').addEventListener('input',()=>{
-  const v=$('budgetInput').value.replace(/[^0-9]/g,'');
-  if(v!==$('budgetInput').value)$('budgetInput').value=v;
 });
 
 /* Export / mentés */
