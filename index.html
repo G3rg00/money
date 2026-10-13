@@ -11,7 +11,7 @@
 <style>
 :root{color-scheme:dark;--bg:#0d100e;--panel:#171c19;--panel2:#202722;--line:#2a342d;--text:#f2f6f2;--muted:#9ba89e;--green:#9be870;--red:#ff7777}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 calc(90px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 calc(90px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 header{padding:22px 18px 14px;display:flex;justify-content:space-between;align-items:center}
 h1{font-size:25px;margin:0;font-weight:800;letter-spacing:-.6px}
 .sub{color:var(--muted);font-size:13px;margin-top:5px}
@@ -40,7 +40,7 @@ main{max-width:720px;margin:auto;padding:0 14px}
 .pill.active{color:var(--green);border-color:var(--green)}
 .progress{height:9px;background:#303832;border-radius:99px;overflow:hidden;margin:12px 0}
 .progress div{height:100%;background:var(--green);border-radius:99px;transition:width .3s}
-input,select,textarea{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 13px}
+input,select,textarea{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 13px;-webkit-user-select:text;user-select:text}
 label.small{font-size:13px;color:#c1ccc3}
 .btn{border:0;border-radius:14px;padding:15px;font-weight:700;font-size:15px;background:var(--green);color:#10200d;width:100%;cursor:pointer;font-family:inherit}
 .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
@@ -63,13 +63,11 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 #monthTitle{font-weight:700;font-size:16px;text-transform:capitalize}
 #monthLabel{color:var(--muted);font-size:12px;margin-top:3px}
 
-/* ===== Month summary sor ===== */
 .month-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .month-summary > div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:11px 14px;text-align:center}
 .month-summary .muted{font-size:11px;text-transform:uppercase;letter-spacing:.5px}
 .month-summary strong{display:block;margin-top:4px;font-size:15px;font-variant-numeric:tabular-nums}
 
-/* ===== Donut ===== */
 .donut-wrap{display:flex;justify-content:center;padding:4px 0 8px}
 .donut{width:210px;height:210px;display:block}
 .donut-total{fill:var(--text);font-size:16px;font-weight:800;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
@@ -84,7 +82,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .legend-item .val{font-weight:700;font-variant-numeric:tabular-nums;font-size:13px}
 .legend-item .pct{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
 
-/* ===== Bar chart ===== */
 .bar-chart{display:flex;align-items:flex-end;gap:6px;height:160px;margin-top:10px}
 .bar-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;height:100%}
 .bar-value{font-size:9px;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:-.3px}
@@ -98,24 +95,30 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .bar-legend{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:10px;padding:0 2px}
 
 /* ===== Bottom sheet ===== */
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:20;display:none;align-items:flex-end;justify-content:center}
 .backdrop.show{display:flex}
-.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:92vh;overflow-y:auto}
+.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:95vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-handle{width:38px;height:4px;background:#3a443c;border-radius:99px;margin:0 auto 14px}
 .sheet h2{font-size:16px;margin:0 0 16px;text-align:center;font-weight:700;color:var(--text)}
 
-.amount-wrap{position:relative;margin-bottom:6px}
-.amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:16px 60px 16px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green)}
-.amount-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
-.amount-suffix{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:600;pointer-events:none}
-.amount-hint{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 16px}
+/* ===== Saját számbillentyűzet ===== */
+.amount-display{text-align:center;font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1.5px;margin:4px 0 2px;min-height:54px;color:var(--text);overflow-wrap:anywhere;line-height:1.2}
+.amount-display small{color:var(--muted);font-size:20px;font-weight:600;margin-left:4px;letter-spacing:0}
+.amount-display.pulse{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+.amount-hint{text-align:center;color:var(--muted);font-size:12px;margin:4px 0 12px;letter-spacing:.3px}
 
-.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#101512;border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#101512;border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
 .type-toggle button{background:transparent;border:0;color:var(--muted);padding:10px;border-radius:9px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
 .type-toggle button.active{background:var(--panel2);color:var(--text)}
 .type-toggle button.active[data-type="income"]{color:var(--green)}
 .type-toggle button.active[data-type="expense"]{color:var(--red)}
+
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.numpad button{background:var(--panel2);border:1px solid var(--line);border-radius:14px;color:var(--text);padding:16px 0;font-size:24px;font-weight:600;font-family:inherit;cursor:pointer;transition:transform .06s,background .1s;-webkit-tap-highlight-color:transparent;line-height:1}
+.numpad button:active{background:#2a342d;transform:scale(.95)}
+.numpad button.del{font-size:20px;color:var(--muted)}
 
 .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 .cat-btn{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px 10px;color:var(--text);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13.5px;font-weight:600;transition:transform .1s,border-color .15s,background .15s}
@@ -125,7 +128,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .summary-line{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#101512;border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
 .summary-line .lbl{color:var(--muted);font-size:13px}
 .summary-line .val{font-weight:700;font-variant-numeric:tabular-nums}
-#noteInput{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 16px}
+#noteInput{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 16px;-webkit-user-select:text;user-select:text}
 
 @media(min-width:600px){.amount{font-size:43px}main{padding:0 22px}}
 </style>
@@ -211,21 +214,29 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
   <button data-page="budgets"><span>◎</span>Keret</button>
 </nav>
 
-<!-- ===== 1. ablak: ÖSSZEG ===== -->
+<!-- ===== 1. ablak: ÖSSZEG (saját számbillentyűzettel) ===== -->
 <div class="backdrop" id="sheetAmount">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="amount-wrap">
-      <input id="amountInput" class="amount-input"
-             type="text" inputmode="numeric" pattern="[0-9]*"
-             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             enterkeyhint="next">
-      <span class="amount-suffix">Ft</span>
-    </div>
-    <div class="amount-hint" id="amountHint">Mennyi az összeg?</div>
+    <div class="amount-display pulse" id="amountDisplay">0<small>Ft</small></div>
+    <div class="amount-hint">Mennyi az összeg?</div>
     <div class="type-toggle" id="typeToggle">
       <button data-type="expense" class="active">− Kiadás</button>
       <button data-type="income">＋ Bevétel</button>
+    </div>
+    <div class="numpad">
+      <button data-key="1">1</button>
+      <button data-key="2">2</button>
+      <button data-key="3">3</button>
+      <button data-key="4">4</button>
+      <button data-key="5">5</button>
+      <button data-key="6">6</button>
+      <button data-key="7">7</button>
+      <button data-key="8">8</button>
+      <button data-key="9">9</button>
+      <button data-key="00">00</button>
+      <button data-key="0">0</button>
+      <button data-key="del" class="del">⌫</button>
     </div>
     <button class="btn" id="toCategory">Tovább</button>
     <button class="btn ghost" data-close>Mégse</button>
@@ -256,7 +267,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </div>
 
 <script>
-const APP_VERSION='v9';
+const APP_VERSION='v10';
 console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
 
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
@@ -264,11 +275,16 @@ const PIE_COLORS=['#9be870','#70b8e8','#e89b70','#c870e8','#e8d070','#70e8b8','#
 let transactions=load(KEY,[]), budget=Number(localStorage.getItem(BKEY)||0), filter='all';
 let selectedType='expense', selectedCat=null;
 let statsOffset=0;
+let amountStr='';  // aktuális összeg számjegyei (pl. "1250")
 const $=id=>document.getElementById(id);
 function load(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}
 function save(){localStorage.setItem(KEY,JSON.stringify(transactions));render()}
 function fmt(n){return new Intl.NumberFormat('hu-HU',{style:'currency',currency:'HUF',maximumFractionDigits:0}).format(n)}
 function fmtShort(n){return new Intl.NumberFormat('hu-HU',{maximumFractionDigits:0}).format(n)}
+function fmtDisplay(raw){
+  if(!raw||raw==='0')return '0';
+  return new Intl.NumberFormat('hu-HU',{maximumFractionDigits:0}).format(Number(raw));
+}
 function dateLocal(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
 function isThisMonth(t){return t.date.slice(0,7)===monthKey(new Date())}
@@ -400,28 +416,51 @@ function showPage(p){
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
+/* ===== Összeg megjelenítése ===== */
+function renderAmount(){
+  const disp=fmtDisplay(amountStr);
+  $('amountDisplay').innerHTML=disp+'<small>Ft</small>';
+  if(amountStr && amountStr!=='0'){
+    $('amountDisplay').classList.remove('pulse');
+  }
+}
+
 function openAmount(type){
   selectedType=type||'expense';
   selectedCat=null;
+  amountStr='';
+  renderAmount();
+  $('amountDisplay').classList.add('pulse');
   document.querySelectorAll('#typeToggle button').forEach(b=>b.classList.toggle('active',b.dataset.type===selectedType));
-  $('amountInput').value='';
-  $('amountHint').textContent='Mennyi az összeg?';
   $('sheetCategory').classList.remove('show');
   $('sheetAmount').classList.add('show');
 }
 function closeAll(){
   $('sheetAmount').classList.remove('show');
   $('sheetCategory').classList.remove('show');
-  try{$('amountInput').blur()}catch(e){}
 }
 
-/* FAB – itt próbálunk fókuszálni, mert ez user gesture */
-$('fabBtn').addEventListener('click',()=>{
-  openAmount('expense');
-  try{$('amountInput').focus({preventScroll:true})}catch(e){}
-});
+$('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
+
+/* ===== Saját számbillentyűzet kezelése ===== */
+document.querySelectorAll('.numpad button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const k=b.dataset.key;
+    if(k==='del'){
+      amountStr=amountStr.slice(0,-1);
+    } else if(k==='00'){
+      if(amountStr==='' || amountStr==='0')amountStr='0';
+      else if(amountStr.length<=7)amountStr+='00';
+    } else {
+      if(amountStr==='0')amountStr=k;
+      else if(amountStr.length<9)amountStr+=k;
+    }
+    if(!amountStr)amountStr='';
+    renderAmount();
+  });
+});
 
 document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('click',()=>{
   selectedType=b.dataset.type;
@@ -429,11 +468,9 @@ document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('c
 }));
 
 $('toCategory').addEventListener('click',()=>{
-  const raw=$('amountInput').value.replace(/[^0-9]/g,'');
-  $('amountInput').value=raw;
-  const amt=Number(raw);
+  const amt=Number(amountStr||0);
   if(!Number.isFinite(amt)||amt<=0){
-    $('amountHint').textContent='⚠️ Előbb írj be egy összeget';
+    $('amountDisplay').classList.add('pulse');
     return;
   }
   $('summaryType').textContent=selectedType==='income'?'Bevétel':'Kiadás';
@@ -446,7 +483,6 @@ $('toCategory').addEventListener('click',()=>{
   $('saveTx').disabled=true;
   $('sheetAmount').classList.remove('show');
   $('sheetCategory').classList.add('show');
-  try{$('amountInput').blur()}catch(e){}
 });
 
 $('backToAmount').addEventListener('click',()=>{
@@ -461,7 +497,7 @@ document.querySelectorAll('.cat-btn').forEach(b=>b.addEventListener('click',()=>
 }));
 
 $('saveTx').addEventListener('click',()=>{
-  const amt=Number($('amountInput').value.replace(/[^0-9]/g,''));
+  const amt=Number(amountStr||0);
   if(!Number.isFinite(amt)||amt<=0||!selectedCat)return;
   transactions.push({
     id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
@@ -470,8 +506,8 @@ $('saveTx').addEventListener('click',()=>{
   });
   save();closeAll();
 });
-$('amountInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('toCategory').click()}});
 
+/* Szűrő */
 $('filterBtn').addEventListener('click',()=>{
   filter=filter==='all'?'expense':filter==='expense'?'income':'all';
   $('filterBtn').textContent=filter==='all'?'Összes':filter==='expense'?'Csak kiadás':'Csak bevétel';
@@ -479,6 +515,7 @@ $('filterBtn').addEventListener('click',()=>{
   render();
 });
 
+/* Keret */
 $('saveBudget').addEventListener('click',()=>{
   budget=Math.max(0,Number($('budgetInput').value.replace(/[^0-9]/g,''))||0);
   localStorage.setItem(BKEY,String(budget));
