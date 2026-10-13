@@ -54,16 +54,12 @@ label.small{font-size:13px;color:#c1ccc3}
 .btn.ghost{background:transparent;color:var(--muted);font-weight:500;margin-top:4px;padding:12px}
 .btn:disabled{opacity:.35}
 .notice{font-size:12px;color:var(--muted);line-height:1.5;margin:12px 3px}
-/* Navigation bottom */
 nav{position:fixed;bottom:0;left:0;right:0;padding:9px 10px calc(9px + env(safe-area-inset-bottom));background:#111512f2;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);display:flex;justify-content:center;gap:5px;z-index:5}
 nav button{flex:1;max-width:180px;background:none;border:0;color:var(--muted);padding:9px 5px;border-radius:12px;font-size:12px;font-family:inherit;cursor:pointer}
 nav button.active{color:var(--green);background:#243026}
 nav span{display:block;font-size:20px;margin-bottom:4px}
-/* FAB */
 .fab{position:fixed;right:18px;bottom:calc(86px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:var(--green);color:#10200d;border:0;font-size:28px;font-weight:400;display:grid;place-items:center;box-shadow:0 8px 24px rgba(155,232,112,.35);z-index:6;cursor:pointer;line-height:1;font-family:inherit}
-/* Pages */
 .page{display:none}.page.active{display:block}
-/* Bottom sheet */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center}
 .backdrop.show{display:flex}
 .sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:16px 20px calc(22px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:92vh;overflow-y:auto}
@@ -75,9 +71,13 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .type-toggle button.active{background:var(--panel2);color:var(--text)}
 .type-toggle button.active[data-type="income"]{color:var(--green)}
 .type-toggle button.active[data-type="expense"]{color:var(--red)}
-.amount-input{width:100%;background:transparent;border:0;color:var(--text);font-size:46px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:10px 0 4px;outline:none;letter-spacing:-1px;-moz-appearance:textfield;appearance:textfield;font-family:inherit}
-.amount-input::-webkit-outer-spin-button,.amount-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.amount-suffix{text-align:center;color:var(--muted);font-size:12px;margin-bottom:22px}
+/* Amount input – text típus, hogy iOS-en mindig feljöjjön a számbillentyűzet */
+.amount-wrap{position:relative;margin-bottom:6px}
+.amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:18px 60px 18px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green)}
+.amount-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
+.amount-input::placeholder{color:#3d473f}
+.amount-suffix{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:600;pointer-events:none}
+.amount-hint{text-align:center;color:var(--muted);font-size:12px;margin:6px 0 22px}
 .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 .cat-btn{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px 10px;color:var(--text);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13.5px;font-weight:600;transition:transform .1s,border-color .15s,background .15s}
 .cat-btn:active{transform:scale(.96)}
@@ -100,7 +100,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </header>
 
 <main>
-  <!-- HOME -->
   <section class="page active" id="home">
     <div class="balance">
       <div class="label">Jelenlegi egyenleg</div>
@@ -114,7 +113,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
     <div id="recent"></div>
   </section>
 
-  <!-- STATS -->
   <section class="page" id="stats">
     <div class="section-head"><h2>Havi áttekintés</h2><span class="muted" id="monthTitle"></span></div>
     <div class="card">
@@ -135,7 +133,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
     </div>
   </section>
 
-  <!-- BUDGET -->
   <section class="page" id="budgets">
     <div class="section-head"><h2>Havi költségkeret</h2></div>
     <div class="card">
@@ -158,22 +155,25 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
   <button data-page="budgets"><span>◎</span>Keret</button>
 </nav>
 
-<!-- SHEET 1: összeg -->
+<!-- SHEET 1 -->
 <div class="backdrop" id="sheetAmount">
-  <div class="sheet">
+  <div class="sheet" id="sheetAmountBody">
     <div class="sheet-handle"></div>
     <div class="type-toggle" id="typeToggle">
       <button data-type="expense" class="active">− Kiadás</button>
       <button data-type="income">＋ Bevétel</button>
     </div>
-    <input id="amountInput" class="amount-input" type="number" inputmode="numeric" min="1" step="1" autocomplete="off">
-    <div class="amount-suffix">Mennyi az összeg?</div>
+    <div class="amount-wrap">
+      <input id="amountInput" class="amount-input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="next">
+      <span class="amount-suffix">Ft</span>
+    </div>
+    <div class="amount-hint" id="amountHint">Koppints a mezőre és írd be az összeget</div>
     <button class="btn" id="toCategory">Tovább</button>
     <button class="btn ghost" data-close>Mégse</button>
   </div>
 </div>
 
-<!-- SHEET 2: kategória -->
+<!-- SHEET 2 -->
 <div class="backdrop" id="sheetCategory">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -197,6 +197,9 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 </div>
 
 <script>
+const APP_VERSION='v3';
+console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
+
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
 let transactions=load(KEY,[]), budget=Number(localStorage.getItem(BKEY)||0), filter='all';
 let selectedType='expense', selectedCat=null;
@@ -210,6 +213,7 @@ function sum(type,arr=transactions){return arr.filter(t=>t.type===type).reduce((
 function catIcon(c){return ({'Kaja/Pia':'🍔','Szórakozás':'🎮','Játék':'🕹️','Ruha':'👕','Adomány':'🎁'})[c]||'💸'}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function txHTML(t){return `<div class="card"><div class="tx"><div class="emoji">${catIcon(t.category)}</div><div class="txinfo"><strong>${escapeHTML(t.note||t.category)}</strong><small>${escapeHTML(t.category)} · ${t.date}</small></div><div class="txamt ${t.type==='income'?'green':'red'}">${t.type==='income'?'+':'−'}${fmt(t.amount)}<small><button class="smallbtn" onclick="removeTx('${t.id}')">Törlés</button></small></div></div></div>`}
+
 function render(){
   const month=transactions.filter(isThisMonth);
   const inc=sum('income'),out=sum('expense');
@@ -219,7 +223,6 @@ function render(){
   const sorted=[...transactions].sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
   const shown=filter==='all'?sorted:sorted.filter(t=>t.type===filter);
   $('recent').innerHTML=shown.slice(0,30).map(txHTML).join('')||'<div class="card empty">Még nincs tranzakciód.<br>Nyomd meg a ＋ gombot!</div>';
-  // stats
   const mi=sum('income',month),mo=sum('expense',month);
   $('statsIn').textContent=fmt(mi);
   $('statsOut').textContent=fmt(mo);
@@ -227,16 +230,15 @@ function render(){
   let cats={};month.filter(t=>t.type==='expense').forEach(t=>cats[t.category]=(cats[t.category]||0)+t.amount);
   const pairs=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
   $('categoryStats').innerHTML=pairs.map(([c,v])=>`<div class="barrow"><div class="barlabel"><span>${catIcon(c)} ${escapeHTML(c)}</span><strong>${fmt(v)}</strong></div><div class="bar"><i style="width:${mo?Math.max(2,v/mo*100):0}%"></i></div></div>`).join('')||'<div class="empty">Ebben a hónapban még nincs kiadás.</div>';
-  // budget
   const used=sum('expense',month),pct=budget?Math.min(100,used/budget*100):0;
   $('budgetInput').value=budget||'';
   $('budgetUsed').textContent=fmt(used)+' / '+fmt(budget);
   $('budgetProgress').style.width=pct+'%';
   $('budgetCaption').textContent=budget?`A keret ${Math.round(used/budget*100)}%-át használtad fel.`:'Állíts be havi keretet.';
 }
+
 function removeTx(id){if(confirm('Törlöd ezt a tranzakciót?')){transactions=transactions.filter(t=>t.id!==id);save()}}
 
-/* Lapváltás */
 function showPage(p){
   document.querySelectorAll('.page').forEach(e=>e.classList.toggle('active',e.id===p));
   document.querySelectorAll('nav button').forEach(e=>e.classList.toggle('active',e.dataset.page===p));
@@ -244,20 +246,38 @@ function showPage(p){
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
-/* Bottom sheet vezérlés */
+/* ===== Bottom sheet ===== */
 function openAmount(type){
   selectedType=type||'expense';
   selectedCat=null;
   document.querySelectorAll('#typeToggle button').forEach(b=>b.classList.toggle('active',b.dataset.type===selectedType));
   $('amountInput').value='';
+  $('amountHint').textContent='Koppints a mezőre és írd be az összeget';
   $('sheetCategory').classList.remove('show');
   $('sheetAmount').classList.add('show');
-  setTimeout(()=>$('amountInput').focus(),180);
+  // Több próbálkozás a fókuszra (iOS-en néha kell egy kis késleltetés)
+  const tryFocus=()=>{try{$('amountInput').focus({preventScroll:true})}catch(e){}};
+  setTimeout(tryFocus,60);
+  setTimeout(tryFocus,300);
+  setTimeout(tryFocus,600);
 }
 function closeAll(){$('sheetAmount').classList.remove('show');$('sheetCategory').classList.remove('show')}
+
 $('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
+
+/* Az összeg-ablak bármely pontjára koppintva fókusz az inputra */
+$('sheetAmountBody').addEventListener('click',e=>{
+  if(e.target.closest('button'))return; // gombokra ne
+  $('amountInput').focus({preventScroll:true});
+});
+$('amountInput').addEventListener('focus',()=>{$('amountHint').textContent='Írd be az összeget, majd Tovább';});
+$('amountInput').addEventListener('input',()=>{
+  // csak számjegyek
+  const v=$('amountInput').value.replace(/[^0-9]/g,'');
+  if(v!==$('amountInput').value)$('amountInput').value=v;
+});
 
 document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('click',()=>{
   selectedType=b.dataset.type;
@@ -266,7 +286,11 @@ document.querySelectorAll('#typeToggle button').forEach(b=>b.addEventListener('c
 
 $('toCategory').addEventListener('click',()=>{
   const amt=Number($('amountInput').value);
-  if(!Number.isFinite(amt)||amt<=0){$('amountInput').focus();return}
+  if(!Number.isFinite(amt)||amt<=0){
+    $('amountHint').textContent='⚠️ Előbb írj be egy összeget';
+    $('amountInput').focus();
+    return;
+  }
   $('summaryType').textContent=selectedType==='income'?'Bevétel':'Kiadás';
   $('summaryAmount').textContent=(selectedType==='income'?'+':'−')+fmt(amt);
   $('summaryAmount').className='val '+(selectedType==='income'?'green':'red');
@@ -297,7 +321,7 @@ $('saveTx').addEventListener('click',()=>{
   });
   save();closeAll();
 });
-$('amountInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('toCategory').click()});
+$('amountInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('toCategory').click()}});
 
 /* Szűrő */
 $('filterBtn').addEventListener('click',()=>{
@@ -345,11 +369,26 @@ $('today').textContent=new Date().toLocaleDateString('hu-HU',{weekday:'long',yea
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 
-/* GYORS RÖGZÍTÉS – hátlapi dupla koppintás */
-/* A Parancsok app így hívja meg:  https://cimed.hu/index.html?quick=1  */
-if(new URLSearchParams(location.search).get('quick')==='1'){
-  openAmount('expense');
-}
+/* ===== GYORS RÖGZÍTÉS =====
+   Többféle alakot is felismer: ?quick=1, ?quick%3D1, #quick=1, quick */
+(function detectQuick(){
+  const h=(location.href||'').toLowerCase();
+  const s=(location.search||'').toLowerCase();
+  const hash=(location.hash||'').toLowerCase();
+  const hit =
+    /[?&#]quick=1/.test(h) ||
+    h.includes('quick%3d1') ||
+    s.includes('quick=1') ||
+    hash.includes('quick=1');
+  if(!hit)return;
+  console.log('Quick mód aktiválva');
+  // Több próba: a lap teljes betöltése után, illetve késleltetve
+  const go=()=>openAmount('expense');
+  if(document.readyState==='complete')setTimeout(go,50);
+  else window.addEventListener('load',()=>setTimeout(go,50));
+  setTimeout(go,400);
+  setTimeout(go,900);
+})();
 </script>
 </body>
 </html>
