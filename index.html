@@ -11,7 +11,7 @@
 <style>
 :root{color-scheme:dark;--bg:#0d100e;--panel:#171c19;--panel2:#202722;--line:#2a342d;--text:#f2f6f2;--muted:#9ba89e;--green:#9be870;--red:#ff7777}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 calc(90px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+body{margin:0;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 calc(90px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
 header{padding:22px 18px 14px;display:flex;justify-content:space-between;align-items:center}
 h1{font-size:25px;margin:0;font-weight:800;letter-spacing:-.6px}
 .sub{color:var(--muted);font-size:13px;margin-top:5px}
@@ -40,7 +40,7 @@ main{max-width:720px;margin:auto;padding:0 14px}
 .pill.active{color:var(--green);border-color:var(--green)}
 .progress{height:9px;background:#303832;border-radius:99px;overflow:hidden;margin:12px 0}
 .progress div{height:100%;background:var(--green);border-radius:99px;transition:width .3s}
-input,select,textarea{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 13px;-webkit-user-select:text;user-select:text}
+input,select,textarea{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 13px}
 label.small{font-size:13px;color:#c1ccc3}
 .btn{border:0;border-radius:14px;padding:15px;font-weight:700;font-size:15px;background:var(--green);color:#10200d;width:100%;cursor:pointer;font-family:inherit}
 .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
@@ -55,7 +55,6 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .fab{position:fixed;right:18px;bottom:calc(86px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:var(--green);color:#10200d;border:0;font-size:28px;font-weight:400;display:grid;place-items:center;box-shadow:0 8px 24px rgba(155,232,112,.35);z-index:6;cursor:pointer;line-height:1;font-family:inherit}
 .page{display:none}.page.active{display:block}
 
-/* ===== Havi lapozó ===== */
 .month-nav{display:flex;align-items:center;justify-content:space-between;margin:8px 3px 10px;gap:10px}
 .nav-arrow{background:var(--panel2);border:1px solid var(--line);border-radius:12px;width:42px;height:42px;color:var(--text);font-size:22px;font-family:inherit;cursor:pointer;display:grid;place-items:center;line-height:1}
 .nav-arrow:disabled{opacity:.25;cursor:default}
@@ -128,7 +127,25 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .summary-line{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:#101512;border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
 .summary-line .lbl{color:var(--muted);font-size:13px}
 .summary-line .val{font-weight:700;font-variant-numeric:tabular-nums}
-#noteInput{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 16px;-webkit-user-select:text;user-select:text}
+
+/* ===== Megjegyzés mező – kifejezetten a szövegbevitelhez ===== */
+.note-wrap{margin:6px 0 16px}
+#noteInput{
+  width:100%;
+  background:#101512;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--text);
+  padding:14px 13px;
+  font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  margin:0;
+  -webkit-user-select:text;
+  user-select:text;
+  -webkit-appearance:none;
+  appearance:none;
+}
+#noteInput:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
+#noteInput::placeholder{color:#5a675d}
 
 @media(min-width:600px){.amount{font-size:43px}main{padding:0 22px}}
 </style>
@@ -259,15 +276,21 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <button class="cat-btn" data-cat="Ruha"><span class="ico">👕</span>Ruha</button>
       <button class="cat-btn" data-cat="Adomány"><span class="ico">🎁</span>Adomány</button>
     </div>
+
     <label class="small" for="noteInput">Megjegyzés (nem kötelező)</label>
-    <input id="noteInput" type="text" maxlength="90" autocomplete="off">
+    <div class="note-wrap">
+      <input id="noteInput" type="text" maxlength="90" autocomplete="off"
+             autocorrect="on" autocapitalize="sentences" spellcheck="true"
+             enterkeyhint="done" placeholder="Pl. ebéd a barátokkal">
+    </div>
+
     <button class="btn" id="saveTx" disabled>Mentés</button>
     <button class="btn ghost" id="backToAmount">← Vissza</button>
   </div>
 </div>
 
 <script>
-const APP_VERSION='v10';
+const APP_VERSION='v11';
 console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
 
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
@@ -275,7 +298,7 @@ const PIE_COLORS=['#9be870','#70b8e8','#e89b70','#c870e8','#e8d070','#70e8b8','#
 let transactions=load(KEY,[]), budget=Number(localStorage.getItem(BKEY)||0), filter='all';
 let selectedType='expense', selectedCat=null;
 let statsOffset=0;
-let amountStr='';  // aktuális összeg számjegyei (pl. "1250")
+let amountStr='';
 const $=id=>document.getElementById(id);
 function load(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch{return f}}
 function save(){localStorage.setItem(KEY,JSON.stringify(transactions));render()}
@@ -416,7 +439,6 @@ function showPage(p){
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
 
-/* ===== Összeg megjelenítése ===== */
 function renderAmount(){
   const disp=fmtDisplay(amountStr);
   $('amountDisplay').innerHTML=disp+'<small>Ft</small>';
@@ -438,13 +460,13 @@ function openAmount(type){
 function closeAll(){
   $('sheetAmount').classList.remove('show');
   $('sheetCategory').classList.remove('show');
+  try{$('noteInput').blur()}catch(e){}
 }
 
 $('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
 document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)closeAll()}));
 
-/* ===== Saját számbillentyűzet kezelése ===== */
 document.querySelectorAll('.numpad button').forEach(b=>{
   b.addEventListener('click',()=>{
     const k=b.dataset.key;
@@ -507,7 +529,6 @@ $('saveTx').addEventListener('click',()=>{
   save();closeAll();
 });
 
-/* Szűrő */
 $('filterBtn').addEventListener('click',()=>{
   filter=filter==='all'?'expense':filter==='expense'?'income':'all';
   $('filterBtn').textContent=filter==='all'?'Összes':filter==='expense'?'Csak kiadás':'Csak bevétel';
@@ -515,7 +536,6 @@ $('filterBtn').addEventListener('click',()=>{
   render();
 });
 
-/* Keret */
 $('saveBudget').addEventListener('click',()=>{
   budget=Math.max(0,Number($('budgetInput').value.replace(/[^0-9]/g,''))||0);
   localStorage.setItem(BKEY,String(budget));
