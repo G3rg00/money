@@ -45,8 +45,6 @@ main{max-width:720px;margin:auto;padding:0 14px}
 .bar{height:8px;background:#303832;border-radius:99px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--green);border-radius:99px}
 input,select,textarea{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 13px}
-input[type=number]{-moz-appearance:textfield;appearance:textfield;font-variant-numeric:tabular-nums}
-input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 label.small{font-size:13px;color:#c1ccc3}
 .btn{border:0;border-radius:14px;padding:15px;font-weight:700;font-size:15px;background:var(--green);color:#10200d;width:100%;cursor:pointer;font-family:inherit}
 .btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
@@ -60,24 +58,31 @@ nav button.active{color:var(--green);background:#243026}
 nav span{display:block;font-size:20px;margin-bottom:4px}
 .fab{position:fixed;right:18px;bottom:calc(86px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:var(--green);color:#10200d;border:0;font-size:28px;font-weight:400;display:grid;place-items:center;box-shadow:0 8px 24px rgba(155,232,112,.35);z-index:6;cursor:pointer;line-height:1;font-family:inherit}
 .page{display:none}.page.active{display:block}
-.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center}
+
+/* ===== Bottom sheet ===== */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:20;display:none;align-items:flex-end;justify-content:center;transition:padding-bottom .15s}
 .backdrop.show{display:flex}
-.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:16px 20px calc(22px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:92vh;overflow-y:auto}
+.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:26px 26px 0 0;padding:14px 20px calc(14px + env(safe-area-inset-bottom));animation:slideUp .28s cubic-bezier(.2,.8,.3,1);border:1px solid var(--line);border-bottom:0;max-height:92vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-handle{width:38px;height:4px;background:#3a443c;border-radius:99px;margin:0 auto 18px}
+.sheet-handle{width:38px;height:4px;background:#3a443c;border-radius:99px;margin:0 auto 14px}
 .sheet h2{font-size:16px;margin:0 0 16px;text-align:center;font-weight:700;color:var(--text)}
-.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#101512;border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:18px}
+
+/* ===== Amount input – legfelül ===== */
+.amount-wrap{position:relative;margin-bottom:6px}
+.amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:16px 60px 16px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green)}
+.amount-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
+.amount-input::placeholder{color:#3d473f}
+.amount-suffix{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:600;pointer-events:none}
+.amount-hint{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 16px}
+
+/* ===== Type toggle ===== */
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#101512;border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px}
 .type-toggle button{background:transparent;border:0;color:var(--muted);padding:10px;border-radius:9px;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
 .type-toggle button.active{background:var(--panel2);color:var(--text)}
 .type-toggle button.active[data-type="income"]{color:var(--green)}
 .type-toggle button.active[data-type="expense"]{color:var(--red)}
-/* Amount input – text típus, hogy iOS-en mindig feljöjjön a számbillentyűzet */
-.amount-wrap{position:relative;margin-bottom:6px}
-.amount-input{width:100%;background:#101512;border:1px solid var(--line);border-radius:16px;color:var(--text);font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums;padding:18px 60px 18px 18px;outline:none;letter-spacing:-1px;font-family:inherit;caret-color:var(--green)}
-.amount-input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(155,232,112,.12)}
-.amount-input::placeholder{color:#3d473f}
-.amount-suffix{position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;font-weight:600;pointer-events:none}
-.amount-hint{text-align:center;color:var(--muted);font-size:12px;margin:6px 0 22px}
+
+/* ===== Category sheet ===== */
 .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 .cat-btn{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:14px 10px;color:var(--text);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13.5px;font-weight:600;transition:transform .1s,border-color .15s,background .15s}
 .cat-btn:active{transform:scale(.96)}
@@ -87,6 +92,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
 .summary-line .lbl{color:var(--muted);font-size:13px}
 .summary-line .val{font-weight:700;font-variant-numeric:tabular-nums}
 #noteInput{width:100%;background:#101512;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px;font:inherit;margin:6px 0 16px}
+
 @media(min-width:600px){.amount{font-size:43px}main{padding:0 22px}}
 </style>
 </head>
@@ -137,7 +143,7 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
     <div class="section-head"><h2>Havi költségkeret</h2></div>
     <div class="card">
       <label class="small" for="budgetInput">Teljes havi kiadási keret (Ft)</label>
-      <input id="budgetInput" type="number" min="0" step="1000">
+      <input id="budgetInput" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" name="pz-budget-x9k2">
       <button class="btn" id="saveBudget">Keret mentése</button>
       <div class="section-head"><h2>Felhasználás</h2><strong id="budgetUsed" style="font-variant-numeric:tabular-nums">0 Ft</strong></div>
       <div class="progress"><div id="budgetProgress" style="width:0%"></div></div>
@@ -155,25 +161,31 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
   <button data-page="budgets"><span>◎</span>Keret</button>
 </nav>
 
-<!-- SHEET 1 -->
+<!-- ===== 1. ablak: ÖSSZEG (legfelül) ===== -->
 <div class="backdrop" id="sheetAmount">
   <div class="sheet" id="sheetAmountBody">
     <div class="sheet-handle"></div>
+
+    <div class="amount-wrap">
+      <input id="amountInput" class="amount-input"
+             type="text" inputmode="numeric" pattern="[0-9]*"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             enterkeyhint="next" name="pz-amt-x9k2">
+      <span class="amount-suffix">Ft</span>
+    </div>
+    <div class="amount-hint" id="amountHint">Mennyi az összeg?</div>
+
     <div class="type-toggle" id="typeToggle">
       <button data-type="expense" class="active">− Kiadás</button>
       <button data-type="income">＋ Bevétel</button>
     </div>
-    <div class="amount-wrap">
-      <input id="amountInput" class="amount-input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="next">
-      <span class="amount-suffix">Ft</span>
-    </div>
-    <div class="amount-hint" id="amountHint">Koppints a mezőre és írd be az összeget</div>
+
     <button class="btn" id="toCategory">Tovább</button>
     <button class="btn ghost" data-close>Mégse</button>
   </div>
 </div>
 
-<!-- SHEET 2 -->
+<!-- ===== 2. ablak: KATEGÓRIA ===== -->
 <div class="backdrop" id="sheetCategory">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -190,14 +202,14 @@ nav span{display:block;font-size:20px;margin-bottom:4px}
       <button class="cat-btn" data-cat="Adomány"><span class="ico">🎁</span>Adomány</button>
     </div>
     <label class="small" for="noteInput">Megjegyzés (nem kötelező)</label>
-    <input id="noteInput" type="text" maxlength="90">
+    <input id="noteInput" type="text" maxlength="90" autocomplete="off">
     <button class="btn" id="saveTx" disabled>Mentés</button>
     <button class="btn ghost" id="backToAmount">← Vissza</button>
   </div>
 </div>
 
 <script>
-const APP_VERSION='v3';
+const APP_VERSION='v4';
 console.log('Pénztáram', APP_VERSION, '| URL:', location.href);
 
 const KEY='penztaram.transactions.v1', BKEY='penztaram.budget.v1';
@@ -252,16 +264,21 @@ function openAmount(type){
   selectedCat=null;
   document.querySelectorAll('#typeToggle button').forEach(b=>b.classList.toggle('active',b.dataset.type===selectedType));
   $('amountInput').value='';
-  $('amountHint').textContent='Koppints a mezőre és írd be az összeget';
+  $('amountHint').textContent='Mennyi az összeg?';
   $('sheetCategory').classList.remove('show');
   $('sheetAmount').classList.add('show');
-  // Több próbálkozás a fókuszra (iOS-en néha kell egy kis késleltetés)
   const tryFocus=()=>{try{$('amountInput').focus({preventScroll:true})}catch(e){}};
   setTimeout(tryFocus,60);
   setTimeout(tryFocus,300);
   setTimeout(tryFocus,600);
+  if(window.__adjustKeyboard)setTimeout(window.__adjustKeyboard,120);
 }
-function closeAll(){$('sheetAmount').classList.remove('show');$('sheetCategory').classList.remove('show')}
+function closeAll(){
+  $('sheetAmount').classList.remove('show');
+  $('sheetCategory').classList.remove('show');
+  document.querySelectorAll('.backdrop').forEach(b=>b.style.paddingBottom='');
+  try{$('amountInput').blur()}catch(e){}
+}
 
 $('fabBtn').addEventListener('click',()=>openAmount('expense'));
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeAll));
@@ -269,12 +286,11 @@ document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>
 
 /* Az összeg-ablak bármely pontjára koppintva fókusz az inputra */
 $('sheetAmountBody').addEventListener('click',e=>{
-  if(e.target.closest('button'))return; // gombokra ne
+  if(e.target.closest('button'))return;
   $('amountInput').focus({preventScroll:true});
 });
 $('amountInput').addEventListener('focus',()=>{$('amountHint').textContent='Írd be az összeget, majd Tovább';});
 $('amountInput').addEventListener('input',()=>{
-  // csak számjegyek
   const v=$('amountInput').value.replace(/[^0-9]/g,'');
   if(v!==$('amountInput').value)$('amountInput').value=v;
 });
@@ -301,6 +317,7 @@ $('toCategory').addEventListener('click',()=>{
   $('saveTx').disabled=true;
   $('sheetAmount').classList.remove('show');
   $('sheetCategory').classList.add('show');
+  try{$('amountInput').blur()}catch(e){}
 });
 
 $('backToAmount').addEventListener('click',()=>{$('sheetCategory').classList.remove('show');$('sheetAmount').classList.add('show')});
@@ -337,6 +354,10 @@ $('saveBudget').addEventListener('click',()=>{
   localStorage.setItem(BKEY,String(budget));
   render();alert('A havi keret elmentve.');
 });
+$('budgetInput').addEventListener('input',()=>{
+  const v=$('budgetInput').value.replace(/[^0-9]/g,'');
+  if(v!==$('budgetInput').value)$('budgetInput').value=v;
+});
 
 /* Export / mentés */
 function download(name,content,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
@@ -364,13 +385,27 @@ $('deleteAll').addEventListener('click',()=>{
   }
 });
 
+/* Billentyűzet-kitolás kezelése */
+(function(){
+  const vv=window.visualViewport;
+  if(!vv)return;
+  const adjust=()=>{
+    const kb=Math.max(0,window.innerHeight - vv.height - vv.offsetTop);
+    document.querySelectorAll('.backdrop').forEach(b=>{
+      if(b.classList.contains('show'))b.style.paddingBottom=kb+'px';
+    });
+  };
+  vv.addEventListener('resize',adjust);
+  vv.addEventListener('scroll',adjust);
+  window.__adjustKeyboard=adjust;
+})();
+
 /* Init */
 $('today').textContent=new Date().toLocaleDateString('hu-HU',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
 render();
 
-/* ===== GYORS RÖGZÍTÉS =====
-   Többféle alakot is felismer: ?quick=1, ?quick%3D1, #quick=1, quick */
+/* ===== GYORS RÖGZÍTÉS ===== */
 (function detectQuick(){
   const h=(location.href||'').toLowerCase();
   const s=(location.search||'').toLowerCase();
@@ -382,7 +417,6 @@ render();
     hash.includes('quick=1');
   if(!hit)return;
   console.log('Quick mód aktiválva');
-  // Több próba: a lap teljes betöltése után, illetve késleltetve
   const go=()=>openAmount('expense');
   if(document.readyState==='complete')setTimeout(go,50);
   else window.addEventListener('load',()=>setTimeout(go,50));
